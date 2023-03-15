@@ -33,3 +33,7 @@
 
 # CLion stuff
 .idea
+
+# CMake stuff
+cmake-build-debug
+q
