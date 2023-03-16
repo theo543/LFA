@@ -7,28 +7,31 @@
 #include <unordered_map>
 #include <unordered_set>
 
-constexpr char LAMBDA = 'L';
-constexpr char ALPHABET_START = 'a';
-constexpr char ALPHABET_END = 'z';
-constexpr int ALPHABET_SIZE = ALPHABET_END - ALPHABET_START + 1;
+constexpr char A_START = 'a';
+constexpr char A_END = 'z';
+constexpr int A_SIZE = A_END - A_START + 1;
 
-// can be used as a NFA or DFA
+enum FA_Type {NFA, LNFA, DFA};
+
 class L_NFA {
     std::vector<int> state_index_to_number;
     std::vector<bool> final_states;
-    std::array<std::vector<std::vector<int> >, ALPHABET_SIZE> transitions;
+    std::array<std::vector<std::vector<int> >, A_SIZE> transitions;
     std::vector<std::vector<int> > lambda_transitions;
     std::vector<std::vector<int> > lambda_closure;
-    std::unordered_set<int> current_states; // used for NFA and L-NFA
+    std::unordered_set<int> current_states;
     int start_state;
     bool in_final_state;
     L_NFA();
     void lambda_close_states();
+    void update_final();
+    FA_Type type;
 public:
     void consume(char c);
     bool is_final() const;
     std::vector<int> get_current_states() const;
     void reset();
+    FA_Type get_type() const;
     friend class L_NFA_Compiler;
 };
 
