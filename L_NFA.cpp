@@ -18,6 +18,8 @@ void L_NFA::lambda_close_states() {
 }
 
 void L_NFA::consume(char c) {
+    if(c < ALPHABET_START || c > ALPHABET_END)
+        throw std::invalid_argument("Invalid character");
     std::unordered_set<int> new_states;
     for(int state : current_states)
         for(int next_state : transitions[c - ALPHABET_START][state])
@@ -54,16 +56,18 @@ L_NFA_Compiler &L_NFA_Compiler::operator=(L_NFA_Compiler &&other) noexcept {
     return *this;
 }
 
-void L_NFA_Compiler::add_state(int state_number, bool is_final) {
+L_NFA_Compiler &L_NFA_Compiler::add_state(int state_number, bool is_final) {
     state_number_to_index[state_number] = next_id++;
     l_nfa->state_index_to_number.push_back(state_number);
     l_nfa->final_states.push_back(is_final);
     l_nfa->lambda_transitions.emplace_back();
+    l_nfa->lambda_closure.emplace_back();
     for(int i = 0; i < ALPHABET_SIZE; i++)
         l_nfa->transitions[i].emplace_back();
+    return *this;
 }
 
-void L_NFA_Compiler::add_transition(int from, char c, int to) {
+L_NFA_Compiler &L_NFA_Compiler::add_transition(int from, char c, int to) {
     if((c > ALPHABET_END || c < ALPHABET_START) && c != LAMBDA)
         throw std::invalid_argument("Invalid character");
     from = state_number_to_index.at(from);
@@ -72,16 +76,19 @@ void L_NFA_Compiler::add_transition(int from, char c, int to) {
         l_nfa->lambda_transitions[from].push_back(to);
     else
         l_nfa->transitions[c - ALPHABET_START][from].push_back(to);
+    return *this;
 }
 
-void L_NFA_Compiler::set_start_state(int state_number) {
+L_NFA_Compiler &L_NFA_Compiler::set_start_state(int state_number) {
     l_nfa->start_state = state_number_to_index.at(state_number);
+    return *this;
 }
 
-void L_NFA_Compiler::reset() {
+L_NFA_Compiler &L_NFA_Compiler::reset() {
     l_nfa = std::unique_ptr<L_NFA>(new L_NFA());
     state_number_to_index.clear();
     next_id = 0;
+    return *this;
 }
 
 L_NFA_Compiler::L_NFA_Compiler() {
@@ -103,7 +110,7 @@ std::vector<int> bfs(std::vector<std::vector<int> > &graph, int start) {
         for(int neighbor : graph[current])
             q.push(neighbor);
     }
-    return std::move(result);
+    return result;
 }
 
 std::unique_ptr<L_NFA> L_NFA_Compiler::compile() {
@@ -112,7 +119,8 @@ std::unique_ptr<L_NFA> L_NFA_Compiler::compile() {
     for(int state = 0;state<next_id;state++){
         l_nfa->lambda_closure[state] = bfs(l_nfa->lambda_transitions, state);
     }
+    l_nfa->reset();
     std::unique_ptr<L_NFA> tmp = std::move(l_nfa);
     reset();
-    return std::move(tmp);
+    return tmp;
 }

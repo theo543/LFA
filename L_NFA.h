@@ -43,10 +43,10 @@ public:
     L_NFA_Compiler &operator=(L_NFA_Compiler &&other) noexcept;
     L_NFA_Compiler();
     std::unique_ptr<L_NFA> compile();
-    void add_state(int state_number, bool is_final);
-    void add_transition(int from, char c, int to);
-    void set_start_state(int state_number);
-    void reset();
+    L_NFA_Compiler & add_state(int state_number, bool is_final);
+    L_NFA_Compiler & add_transition(int from, char c, int to);
+    L_NFA_Compiler & set_start_state(int state_number);
+    L_NFA_Compiler & reset();
 };
 
 #endif //LFA_L_NFA_H
