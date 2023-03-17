@@ -193,6 +193,7 @@ int main(){
         } catch (std::exception &e) {
             std::cout<<"Error: "<<e.what()<<std::endl;
             std::cout<<"Restarting with new automaton..." << std::endl;
+            compiler.reset();
         }
     }
     break_uppermost:;
