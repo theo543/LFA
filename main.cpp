@@ -135,60 +135,65 @@ const std::vector<std::pair<std::string, add_function>> tests = {
 int main(){
     L_NFA_Compiler compiler;
     for(;;) {
-        std::cout<<"Available tests:"<<std::endl;
-        for(int i = 0; i < tests.size(); i++)
-            std::cout<<i<<". "<<tests[i].first<<std::endl;
-        std::cout<<"Choose which tests to add (can input multiple numbers)"<<std::endl;
-        std::cout<<"Add non-number character to stop"<<std::endl;
-        std::cin>>std::ws;
-        std::string input;
-        std::getline(std::cin, input);
-        compiler.add_state(0, false);
-        int offset = 1;
-        for(char c : input) {
-            if(c >= '0' && c <= '9') {
-                int test_index = c - '0';
-                if (test_index < tests.size()) {
-                    tests[test_index].second(compiler, offset * SPACING);
-                    if (offset == 2) {
-                        compiler.add_transition(0, 'L', 1 * SPACING);
-                        compiler.add_transition(0, 'L', 2 * SPACING);
-                        compiler.set_start_state(0);
-                    } else if (offset > 2) {
-                        compiler.add_transition(0, 'L', offset * SPACING);
-                    } else compiler.set_start_state(offset * SPACING);
-                    offset++;
-                }
-            } else if(c == ' ') {
-                continue;
-            } else goto break_uppermost;
-        }
-        auto l_nfa = compiler.compile();
-        if(l_nfa->get_type() == DFA) std::cout<<"DFA"<<std::endl;
-        else if (l_nfa->get_type() == NFA) std::cout<<"NFA"<<std::endl;
-        else std::cout<<"L-NFA"<<std::endl;
-        for(;;) {
-            l_nfa->reset();
-            std::cout<<"Input string: (add non-letter character to stop) (use L for empty string)"<<std::endl;
+        try {
+            std::cout<<"Available tests:"<<std::endl;
+            for(int i = 0; i < tests.size(); i++)
+                std::cout<<i<<". "<<tests[i].first<<std::endl;
+            std::cout<<"Choose which tests to add (can input multiple numbers)"<<std::endl;
+            std::cout<<"Add non-number character to stop"<<std::endl;
             std::cin>>std::ws;
+            std::string input;
             std::getline(std::cin, input);
-            if(input == "L") input = "";
+            compiler.add_state(0, false);
+            int offset = 1;
             for(char c : input) {
-                if(c < A_START || c > A_END) {
-                    goto break_upper;
+                if(c >= '0' && c <= '9') {
+                    int test_index = c - '0';
+                    if (test_index < tests.size()) {
+                        tests[test_index].second(compiler, offset * SPACING);
+                        if (offset == 2) {
+                            compiler.add_transition(0, 'L', 1 * SPACING);
+                            compiler.add_transition(0, 'L', 2 * SPACING);
+                            compiler.set_start_state(0);
+                        } else if (offset > 2) {
+                            compiler.add_transition(0, 'L', offset * SPACING);
+                        } else compiler.set_start_state(offset * SPACING);
+                        offset++;
+                    }
+                } else if(c == ' ') {
+                    continue;
+                } else goto break_uppermost;
+            }
+            auto l_nfa = compiler.compile();
+            if(l_nfa->get_type() == DFA) std::cout<<"DFA"<<std::endl;
+            else if (l_nfa->get_type() == NFA) std::cout<<"NFA"<<std::endl;
+            else std::cout<<"L-NFA"<<std::endl;
+            for(;;) {
+                l_nfa->reset();
+                std::cout<<"Input string: (add non-letter character to stop) (use L for empty string)"<<std::endl;
+                std::cin>>std::ws;
+                std::getline(std::cin, input);
+                if(input == "L") input = "";
+                for(char c : input) {
+                    if(c < A_START || c > A_END) {
+                        goto break_upper;
+                    }
                 }
+                std::cout << "Initial states: " << states_to_string(*l_nfa) << std::endl;
+                for(char c : input) {
+                    if(c >= A_START && c <= A_END) {
+                        l_nfa->consume(c);
+                        std::cout<<"Consuming: "<<c<<std::endl;
+                        std::cout << "Current states: " << states_to_string(*l_nfa) << std::endl;
+                    } else break;
+                }
+                std::cout<<"Accepting: "<<l_nfa->is_final()<<std::endl;
             }
-            std::cout << "Initial states: " << states_to_string(*l_nfa) << std::endl;
-            for(char c : input) {
-                if(c >= A_START && c <= A_END) {
-                    l_nfa->consume(c);
-                    std::cout<<"Consuming: "<<c<<std::endl;
-                    std::cout << "Current states: " << states_to_string(*l_nfa) << std::endl;
-                } else break;
-            }
-            std::cout<<"Accepting: "<<l_nfa->is_final()<<std::endl;
+            break_upper:;
+        } catch (std::exception &e) {
+            std::cout<<"Error: "<<e.what()<<std::endl;
+            std::cout<<"Restarting with new automaton..." << std::endl;
         }
-        break_upper:;
     }
     break_uppermost:;
     return 0;
