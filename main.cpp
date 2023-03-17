@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <memory>
 #include "L_NFA.h"
 
@@ -77,10 +78,11 @@ void add_abc_loop_plus_ac(L_NFA_Compiler &compiler, int state_start) {
             .add_transition(state_start + 3, 'c', state_start + 4);
 }
 
-void print_states(L_NFA const &l_nfa) {
+std::string states_to_string(L_NFA const &l_nfa) {
+    std::stringstream ss;
     for (int state : l_nfa.get_current_states())
-        std::cout << state << " ";
-    std::cout << std::endl;
+        ss << state << " ";
+    return ss.str();
 }
 
 typedef void (*add_function)(L_NFA_Compiler&, int);
@@ -137,11 +139,12 @@ int main(){
                     goto break_upper;
                 }
             }
-            print_states(*l_nfa);
+            std::cout << "Initial states: " << states_to_string(*l_nfa) << std::endl;
             for(char c : input) {
                 if(c >= A_START && c <= A_END) {
                     l_nfa->consume(c);
-                    print_states(*l_nfa);
+                    std::cout<<"Consuming: "<<c<<std::endl;
+                    std::cout << "Current states: " << states_to_string(*l_nfa) << std::endl;
                 } else break;
             }
             std::cout<<"Accepting: "<<l_nfa->is_final()<<std::endl;
