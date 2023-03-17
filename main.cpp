@@ -5,6 +5,43 @@
 
 constexpr int SPACING = 100;
 
+void add_keyboard_input(L_NFA_Compiler &compiler, int state_start) {
+    std::cout<< "You must add the start state 0."<< std::endl;
+    std::cout<< "Do not add states beyond " << SPACING - 1 << " to avoid collisions (unless this is the last or only test)" << std::endl;
+    std::cout<< "(All states for this test will be incremented by " << state_start << " to give space for other tests)" << std::endl;
+    std::cout<<"Enter the states. Final states should be marked with a * at the end. Use -1 to stop adding states." << std::endl;
+    for(;;) {
+        std::string state_number;
+        std::cin >> state_number;
+        bool final = false;
+        if(state_number.back() == '*') {
+            state_number.pop_back();
+            final = true;
+        }
+        if(std::stoi(state_number) == -1)
+            break;
+        compiler.add_state(std::stoi(state_number) + state_start, final);
+    }
+    std::cout<<"Enter the transitions: " << std::endl;
+    std::cout<<"Enter the transitions as number + letter + number (with spaces). Lambda transitions should be marked with a L." << std::endl;
+    std::cout<<"Enter a * to automatically add 26 transitions for each alphabet character. (If you also want a lambda you must add it manually.)" << std::endl;
+    std::cout<<"Enter the number -1 to stop adding transitions." << std::endl;
+    for(;;) {
+        int from, to;
+        char c;
+        std::cin >> from;
+        if(from == -1)
+            break;
+        std::cin >> c >> to;
+        if(c != '*')
+            compiler.add_transition(from + state_start, c, to + state_start);
+        else {
+            for(char j = A_START; j <= A_END; j++)
+                compiler.add_transition(from + state_start, j, to + state_start);
+        }
+    }
+}
+
 void add_number_matching(L_NFA_Compiler &compiler, int state_start) {
     int current_state = state_start;
     compiler.add_state(current_state++, false);
@@ -91,7 +128,8 @@ const std::vector<std::pair<std::string, add_function>> tests = {
         {"Even length", add_even_length},
         {"Odd length", add_odd_length},
         {"Tema 2 ex 3", add_tema_2_ex_3},
-        {"(abc)*ac", add_abc_loop_plus_ac}
+        {"(abc)*ac", add_abc_loop_plus_ac},
+        {"Keyboard input", add_keyboard_input}
 };
 
 int main(){
@@ -110,7 +148,7 @@ int main(){
         for(char c : input) {
             if(c >= '0' && c <= '9') {
                 int test_index = c - '0';
-                if(test_index < tests.size()) {
+                if (test_index < tests.size()) {
                     tests[test_index].second(compiler, offset * SPACING);
                     if (offset == 2) {
                         compiler.add_transition(0, 'L', 1 * SPACING);
@@ -118,10 +156,11 @@ int main(){
                         compiler.set_start_state(0);
                     } else if (offset > 2) {
                         compiler.add_transition(0, 'L', offset * SPACING);
-                    }
-                    else compiler.set_start_state(offset * SPACING);
+                    } else compiler.set_start_state(offset * SPACING);
                     offset++;
                 }
+            } else if(c == ' ') {
+                continue;
             } else goto break_uppermost;
         }
         auto l_nfa = compiler.compile();
