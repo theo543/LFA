@@ -1,6 +1,5 @@
 #include <iostream>
 #include "L_NFA.h"
-#include <sstream>
 
 static const int SPACING = 100;
 
