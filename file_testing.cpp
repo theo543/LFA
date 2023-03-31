@@ -3,11 +3,12 @@
 #include "L_NFA.h"
 
 void file_mode() {
+    const auto EMPTYLINE = "__EMPTYLINE__";
+    const std::string out_strings[2] = {"NO", "YES"};
     L_NFA_Compiler compiler;
     std::ifstream in("input.txt");
     std::ofstream out("output.txt");
     int n, m, word_nr;
-    std::string word_input;
     in >> n;
     {
         int state;
@@ -37,16 +38,20 @@ void file_mode() {
     }
     auto automat = compiler.compile();
     in>>word_nr;
+    std::string word_input;
     for(int x = 0;x<word_nr;x++){
         automat->reset();
         in>>std::ws;
         std::getline(in, word_input);
+        if(word_input == EMPTYLINE) word_input = "";
+        std::cout<<"\nCurrent test: "<<word_input<<std::endl;
         std::cout<<"Init states: " << states_to_string(*automat) << std::endl;
         for(char letter : word_input) {
             automat->consume(letter);
             std::cout<<"States after "<<letter<<": ";
-            std::cout<<states_to_string(*automat)<<std::endl;
+            std::cout<<states_to_string(*automat);
+            std::cout<<out_strings[automat->is_final()]<<std::endl;
         }
-        out << (automat->is_final() ? "NO" : "YES") << std::endl;
+        out << out_strings[automat->is_final()] << std::endl;
     }
 }
