@@ -36,3 +36,6 @@
 
 # CMake stuff
 cmake-build-debug
+
+input.txt
+output.txt
