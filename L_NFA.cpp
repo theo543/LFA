@@ -26,11 +26,11 @@ void L_NFA::lambda_close_states() {
 void L_NFA::consume(char c) {
     if(c < A_START || c > A_END)
         throw std::invalid_argument("Invalid character");
+    if(current_states.empty()) {
+        in_final_state = false;
+        return;
+    }
     if(type == DFA) {
-        if(current_states.empty()) {
-            in_final_state = false;
-            return;
-        }
         auto &t_vec = transitions[c - A_START][*current_states.begin()];
         if(t_vec.empty()) {
             current_states = {};
