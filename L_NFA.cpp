@@ -63,6 +63,7 @@ bool L_NFA::is_final() const {
 
 std::vector<int> L_NFA::get_current_states() const {
     std::vector<int> numbers;
+    numbers.reserve(current_states.size());
     for(int state : current_states)
         numbers.push_back(state_index_to_number[state]);
     return numbers;
@@ -82,6 +83,7 @@ L_NFA_Compiler::L_NFA_Compiler(L_NFA_Compiler &&other)  noexcept {
 L_NFA_Compiler &L_NFA_Compiler::operator=(L_NFA_Compiler &&other) noexcept {
     this->l_nfa = std::move(other.l_nfa);
     this->state_number_to_index = std::move(other.state_number_to_index);
+    this->next_id = other.next_id;
     return *this;
 }
 
@@ -94,6 +96,12 @@ L_NFA_Compiler &L_NFA_Compiler::add_state(int state_number, bool is_final) {
     for(int i = 0; i < A_SIZE; i++)
         l_nfa->transitions[i].emplace_back();
     return *this;
+}
+
+void L_NFA_Compiler::set_final(int state_number, bool is_final) {
+    if(state_number_to_index.find(state_number) == state_number_to_index.end())
+        throw std::invalid_argument("State does not exist");
+    l_nfa->final_states[state_number_to_index[state_number]] = is_final;
 }
 
 L_NFA_Compiler &L_NFA_Compiler::add_transition(int from, char c, int to) {

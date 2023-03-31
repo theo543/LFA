@@ -46,7 +46,8 @@ public:
     L_NFA_Compiler &operator=(L_NFA_Compiler &&other) noexcept;
     L_NFA_Compiler();
     std::unique_ptr<L_NFA> compile();
-    L_NFA_Compiler & add_state(int state_number, bool is_final);
+    L_NFA_Compiler & add_state(int state_number, bool is_final = false);
+    void set_final(int state_number, bool is_final);
     L_NFA_Compiler & add_transition(int from, char c, int to);
     L_NFA_Compiler & set_start_state(int state_number);
     L_NFA_Compiler & reset();
