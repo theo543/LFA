@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <queue>
+#include <sstream>
 #include "L_NFA.h"
 
 L_NFA::L_NFA() : start_state(-1), in_final_state(false), type(DFA) {}
@@ -172,4 +173,11 @@ std::unique_ptr<L_NFA> L_NFA_Compiler::compile() {
     std::unique_ptr<L_NFA> tmp = std::move(l_nfa);
     reset();
     return tmp;
+}
+
+std::string states_to_string(L_NFA const &l_nfa) {
+    std::stringstream ss;
+    for (int state : l_nfa.get_current_states())
+        ss << state << " ";
+    return ss.str();
 }

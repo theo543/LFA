@@ -53,4 +53,6 @@ public:
     L_NFA_Compiler & reset();
 };
 
+std::string states_to_string(L_NFA const &l_nfa);
+
 #endif //LFA_L_NFA_H

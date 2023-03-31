@@ -4,13 +4,6 @@
 
 static const int SPACING = 100;
 
-std::string states_to_string(L_NFA const &l_nfa) {
-    std::stringstream ss;
-    for (int state : l_nfa.get_current_states())
-        ss << state << " ";
-    return ss.str();
-}
-
 void add_keyboard_input(L_NFA_Compiler &compiler, int state_start) {
     std::cout<< "You must add the start state 0."<< std::endl;
     std::cout<< "Do not add states beyond " << SPACING - 1 << " to avoid collisions (unless this is the last or only test)" << std::endl;
