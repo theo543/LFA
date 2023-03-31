@@ -1,0 +1,27 @@
+3
+0 1 2
+5
+0 1 a
+1 0 a
+1 0 b
+0 2 c
+2 0 d
+0
+1
+0
+12
+__EMPTYLINE__
+a
+aa
+aaa
+aaaa
+ab
+ba
+aba
+bab
+abab
+abcdab
+cd
+
+
+Automatul este echivalent cu (cd|a(a|b))*
