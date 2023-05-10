@@ -48,7 +48,7 @@ void add_number_matching(L_NFA_Compiler &compiler, int state_start) {
         compiler.add_state(current_state, false);
         compiler.add_transition(state_start, 'L', current_state);
         current_state++;
-        for(int i = 0; i < nr.size(); i++) {
+        for(std::size_t i = 0; i < nr.size(); i++) {
             compiler.add_state(current_state, i == (nr.size() - 1));
             compiler.add_transition(current_state - 1, nr[i], current_state);
             current_state++;
@@ -128,7 +128,7 @@ void interactive_testing_mode() {
     for(;;) {
         try {
             std::cout<<"Available tests:"<<std::endl;
-            for(int i = 0; i < tests.size(); i++)
+            for(std::size_t i = 0; i < tests.size(); i++)
                 std::cout<<i<<". "<<tests[i].first<<std::endl;
             std::cout<<"Choose which tests to add (can input multiple numbers)"<<std::endl;
             std::cout<<"Add non-number character to stop"<<std::endl;
@@ -139,7 +139,7 @@ void interactive_testing_mode() {
             int offset = 1;
             for(char c : input) {
                 if(c >= '0' && c <= '9') {
-                    int test_index = c - '0';
+                    std::size_t test_index = c - '0';
                     if (test_index < tests.size()) {
                         tests[test_index].second(compiler, offset * SPACING);
                         if (offset == 2) {

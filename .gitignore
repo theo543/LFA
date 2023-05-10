@@ -35,4 +35,4 @@
 .idea
 
 # CMake stuff
-cmake-build-debug
+cmake-build-*

@@ -43,6 +43,7 @@ void file_mode() {
         automat->reset();
         in>>std::ws;
         std::getline(in, word_input);
+        while(word_input.ends_with('\r') || word_input.ends_with('\n')) word_input.pop_back();
         if(word_input == EMPTYLINE) word_input = "";
         std::cout<<"\nCurrent test: "<<word_input<<std::endl;
         std::cout<<"Init states: " << states_to_string(*automat) << std::endl;
